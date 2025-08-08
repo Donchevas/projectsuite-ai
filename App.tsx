@@ -8,6 +8,7 @@ import Milestones from './components/Milestones';
 import Reports from './components/Reports';
 import LessonsLearned from './components/LessonsLearned';
 import ClientView from './components/ClientView';
+import Presentations from './components/Presentations';
 import { ViewType } from './types';
 
 const App: React.FC = () => {
@@ -25,6 +26,8 @@ const App: React.FC = () => {
         return <Milestones />;
       case 'reports':
         return <Reports />;
+      case 'presentations':
+        return <Presentations />;
       case 'lessons':
         return <LessonsLearned />;
       case 'client':
@@ -40,6 +43,7 @@ const App: React.FC = () => {
     risks: 'Análisis de Riesgos',
     milestones: 'Hitos y Entregables',
     reports: 'Reportes de Avance',
+    presentations: 'Generador de Presentaciones',
     lessons: 'Lecciones Aprendidas',
     client: 'Portal del Cliente'
   };
