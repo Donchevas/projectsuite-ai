@@ -2,11 +2,11 @@
 import { Project, Risk, Milestone, Report, LessonLearned, ProjectStatus, RiskImpact, RiskProbability, MilestoneStatus } from './types';
 
 export const PROJECTS: Project[] = [
-  { id: 'P001', name: 'Despliegue de Infraestructura Cloud', progress: 75, status: ProjectStatus.OnTrack, client: 'Ayesa', endDate: '2024-12-31', projectManager: 'Ana García' },
-  { id: 'P002', name: 'Sistema de Gestión de Clientes (CRM)', progress: 40, status: ProjectStatus.AtRisk, client: 'Tech Solutions', endDate: '2025-03-15', projectManager: 'Carlos Pérez' },
-  { id: 'P003', name: 'Consultoría Estratégica Digital', progress: 95, status: ProjectStatus.Completed, client: 'Innovate Corp', endDate: '2024-08-01', projectManager: 'Laura Martínez' },
-  { id: 'P004', name: 'Desarrollo de App Móvil', progress: 20, status: ProjectStatus.OffTrack, client: 'Startup X', endDate: '2025-06-30', projectManager: 'Carlos Pérez' },
-  { id: 'P005', name: 'Auditoría de Seguridad IT', progress: 60, status: ProjectStatus.OnHold, client: 'Ayesa', endDate: '2024-11-20', projectManager: 'Ana García' },
+  { id: 'P001', name: 'Despliegue de Infraestructura Cloud', progress: 75, status: ProjectStatus.OnTrack, client: 'Ayesa', endDate: '2024-12-31', projectManager: 'Ana García', budget: 50000, currentCost: 35000 },
+  { id: 'P002', name: 'Sistema de Gestión de Clientes (CRM)', progress: 40, status: ProjectStatus.AtRisk, client: 'Tech Solutions', endDate: '2025-03-15', projectManager: 'Carlos Pérez', budget: 120000, currentCost: 65000 },
+  { id: 'P003', name: 'Consultoría Estratégica Digital', progress: 95, status: ProjectStatus.Completed, client: 'Innovate Corp', endDate: '2024-08-01', projectManager: 'Laura Martínez', budget: 80000, currentCost: 78000 },
+  { id: 'P004', name: 'Desarrollo de App Móvil', progress: 20, status: ProjectStatus.OffTrack, client: 'Startup X', endDate: '2025-06-30', projectManager: 'Carlos Pérez', budget: 90000, currentCost: 88000 },
+  { id: 'P005', name: 'Auditoría de Seguridad IT', progress: 60, status: ProjectStatus.OnHold, client: 'Ayesa', endDate: '2024-11-20', projectManager: 'Ana García', budget: 40000, currentCost: 10000 },
 ];
 
 export const RISKS: Risk[] = [
