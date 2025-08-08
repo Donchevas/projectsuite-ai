@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ViewType } from '../types';
-import { DashboardIcon, ProjectsIcon, RisksIcon, MilestonesIcon, ReportsIcon, LessonsIcon, ClientIcon } from './Icons';
+import { DashboardIcon, ProjectsIcon, RisksIcon, MilestonesIcon, ReportsIcon, LessonsIcon, ClientIcon, PresentationIcon } from './Icons';
 
 interface SidebarProps {
   activeView: ViewType;
@@ -14,6 +14,7 @@ const navItems = [
   { view: 'risks' as ViewType, label: 'Riesgos', icon: RisksIcon },
   { view: 'milestones' as ViewType, label: 'Hitos y Entregables', icon: MilestonesIcon },
   { view: 'reports' as ViewType, label: 'Reportes', icon: ReportsIcon },
+  { view: 'presentations' as ViewType, label: 'Presentaciones', icon: PresentationIcon },
   { view: 'lessons' as ViewType, label: 'Lecciones Aprendidas', icon: LessonsIcon },
   { view: 'client' as ViewType, label: 'Vista Cliente', icon: ClientIcon },
 ];

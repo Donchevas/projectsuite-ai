@@ -34,6 +34,8 @@ export interface Project {
   client: string;
   endDate: string;
   projectManager: string;
+  budget: number;
+  currentCost: number;
 }
 
 export interface Risk {
@@ -75,4 +77,11 @@ export interface LessonLearned {
   votes: number;
 }
 
-export type ViewType = 'dashboard' | 'projects' | 'risks' | 'milestones' | 'reports' | 'lessons' | 'client';
+export type ViewType = 'dashboard' | 'projects' | 'risks' | 'milestones' | 'reports' | 'presentations' | 'lessons' | 'client';
+
+export interface Insight {
+    projectId: string;
+    title: string;
+    description: string;
+    severity: 'warning' | 'critical';
+}

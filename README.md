@@ -1,5 +1,14 @@
-# ProjectSuite AI
+# Run and deploy your AI Studio app
 
-Plataforma inteligente para la gestión de proyectos y servicios, con enfoque modular, automatización de reportes y visualización clara del estado del portafolio.
+This contains everything you need to run your app locally.
 
-Diseñado como parte de la propuesta SuperPACE de Ayesa.
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

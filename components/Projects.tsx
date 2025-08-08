@@ -1,6 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
-import { PROJECTS } from '../constants';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Project, ProjectStatus } from '../types';
 
 const statusColors: { [key in ProjectStatus]: string } = {
@@ -12,24 +11,67 @@ const statusColors: { [key in ProjectStatus]: string } = {
 };
 
 const Projects: React.FC = () => {
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState({ pm: '', client: '', status: '' });
 
-    const projectManagers = useMemo(() => [...new Set(PROJECTS.map(p => p.projectManager))], []);
-    const clients = useMemo(() => [...new Set(PROJECTS.map(p => p.client))], []);
+    useEffect(() => {
+        const fetchProjects = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                // Esta es la URL de tu endpoint en el backend.
+                // Cuando crees tu API, esta URL deberá apuntar a ella.
+                const response = await fetch('/api/projects'); // <-- ¡Llamada a la API!
+                
+                if (!response.ok) {
+                    throw new Error('No se pudieron cargar los proyectos. Inténtalo de nuevo.');
+                }
+                const data: Project[] = await response.json();
+                setProjects(data);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Ocurrió un error desconocido.');
+                console.error("Fallo al obtener los proyectos:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProjects();
+    }, []); // El array vacío asegura que esto se ejecute solo una vez al montar el componente.
+
+    const projectManagers = useMemo(() => [...new Set(projects.map(p => p.projectManager))], [projects]);
+    const clients = useMemo(() => [...new Set(projects.map(p => p.client))], [projects]);
     const statuses = useMemo(() => Object.values(ProjectStatus), []);
 
     const filteredProjects = useMemo(() => {
-        return PROJECTS.filter(project => {
+        return projects.filter(project => {
             return (filters.pm === '' || project.projectManager === filters.pm) &&
                    (filters.client === '' || project.client === filters.client) &&
                    (filters.status === '' || project.status === filters.status);
         });
-    }, [filters]);
+    }, [filters, projects]);
     
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFilters(prev => ({ ...prev, [name]: value }));
     };
+
+    const formatCurrency = (value: number) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 }).format(value);
+
+    const TableSkeleton = () => (
+        <div className="w-full">
+            {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-center space-x-4 p-4 border-b dark:border-gray-700 animate-pulse">
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
+                </div>
+            ))}
+        </div>
+    );
 
     return (
         <div className="p-8">
@@ -59,41 +101,71 @@ const Projects: React.FC = () => {
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-x-auto">
-                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" className="px-6 py-3">Nombre del Proyecto</th>
-                            <th scope="col" className="px-6 py-3">Avance</th>
-                            <th scope="col" className="px-6 py-3">Estado</th>
-                            <th scope="col" className="px-6 py-3">Cliente</th>
-                            <th scope="col" className="px-6 py-3">Fecha Fin Estimada</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredProjects.map((project: Project) => (
-                            <tr key={project.id} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">{project.name}</td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center">
-                                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mr-2">
-                                            <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${project.progress}%` }}></div>
-                                        </div>
-                                        <span>{project.progress}%</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className={`flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full`}>
-                                        <span className={`w-2 h-2 mr-2 rounded-full ${statusColors[project.status]}`}></span>
-                                        <span className="text-gray-800 dark:text-gray-200">{project.status}</span>
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4">{project.client}</td>
-                                <td className="px-6 py-4">{project.endDate}</td>
+                {isLoading ? (
+                    <TableSkeleton />
+                ) : error ? (
+                    <div className="text-center py-8 text-red-500 dark:text-red-400">{error}</div>
+                ) : (
+                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" className="px-6 py-3">Nombre del Proyecto</th>
+                                <th scope="col" className="px-6 py-3">Avance</th>
+                                <th scope="col" className="px-6 py-3">Estado</th>
+                                <th scope="col" className="px-6 py-3">Costo / Presupuesto</th>
+                                <th scope="col" className="px-6 py-3">Cliente</th>
+                                <th scope="col" className="px-6 py-3">Fecha Fin Estimada</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-                 {filteredProjects.length === 0 && (
+                        </thead>
+                        <tbody>
+                            {filteredProjects.map((project: Project) => {
+                                const costPercentage = (project.currentCost / project.budget) * 100;
+                                let costColor = 'bg-green-600';
+                                if (costPercentage > 95) {
+                                    costColor = 'bg-red-600';
+                                } else if (costPercentage > 80) {
+                                    costColor = 'bg-yellow-500';
+                                }
+
+                                return (
+                                    <tr key={project.id} className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">{project.name}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center">
+                                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mr-2">
+                                                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${project.progress}%` }}></div>
+                                                </div>
+                                                <span>{project.progress}%</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full`}>
+                                                <span className={`w-2 h-2 mr-2 rounded-full ${statusColors[project.status]}`}></span>
+                                                <span className="text-gray-800 dark:text-gray-200">{project.status}</span>
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-col">
+                                                <div className="flex items-center">
+                                                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mr-2">
+                                                        <div className={`${costColor} h-2.5 rounded-full`} style={{ width: `${costPercentage}%` }}></div>
+                                                    </div>
+                                                    <span>{Math.round(costPercentage)}%</span>
+                                                </div>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 whitespace-nowrap">
+                                                    {formatCurrency(project.currentCost)} / {formatCurrency(project.budget)}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">{project.client}</td>
+                                        <td className="px-6 py-4">{project.endDate}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                )}
+                 {filteredProjects.length === 0 && !isLoading && !error && (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                         No se encontraron proyectos con los filtros seleccionados.
                     </div>
